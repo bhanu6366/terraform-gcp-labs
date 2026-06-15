@@ -9,8 +9,3 @@ resource "google_storage_bucket" "terraform_state" {
   }
 }
 
-resource "google_storage_bucket" "manual" {
-  name                        = "bhanu6366-manual-import-bucket"
-  location                    = "US"
-  uniform_bucket_level_access = true
-}
