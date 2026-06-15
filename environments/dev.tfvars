@@ -1,0 +1,5 @@
+project_id      = "devops-lab-dev"
+region          = "europe-west1"
+bucket_name     = "bhanu6366-devops-lab-bucket-001"
+bucket_location = "EU"
+environment     = "dev"
