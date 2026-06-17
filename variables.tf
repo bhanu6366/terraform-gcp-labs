@@ -22,3 +22,8 @@ variable "environment" {
   description = "Environment"
   type        = string
 }
+variable "db_password" {
+  description = "Database Password"
+  type        = string
+  sensitive   = true
+}

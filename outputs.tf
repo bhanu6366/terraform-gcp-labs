@@ -8,3 +8,6 @@ output "bucket_url" {
 output "lb_ip" {
   value = google_compute_global_address.nginx.address
 }
+output "cloudsql_instance" {
+  value = google_sql_database_instance.postgres.name
+}
