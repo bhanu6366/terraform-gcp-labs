@@ -17,5 +17,7 @@ resource "google_compute_instance" "vm" {
     }
   }
 
+  metadata_startup_script = file("${path.module}/scripts/startup.sh")
+
   tags = ["ssh"]
 }
