@@ -1,0 +1,61 @@
+name: Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: devops-lab-dev
+  GAR_LOCATION: europe-west1
+  REPOSITORY: devops-repo
+  IMAGE: bhavani-nginx
+  CLUSTER_NAME: devops-gke
+  CLUSTER_ZONE: europe-west1-b
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup GCloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
+
+      - name: Build Docker Image
+        run: |
+          docker build -t europe-west1-docker.pkg.dev/devops-lab-dev/devops-repo/bhavani-nginx:${{ github.sha }} .
+
+      - name: Push Docker Image
+        run: |
+          docker push europe-west1-docker.pkg.dev/devops-lab-dev/devops-repo/bhavani-nginx:${{ github.sha }}
+
+      - name: Get GKE Credentials
+        run: |
+          gcloud container clusters get-credentials devops-gke --zone europe-west1-b
+
+      - name: Update Deployment
+        run: |
+          kubectl set image deployment/bhavani-web \
+          bhavani-nginx=europe-west1-docker.pkg.dev/devops-lab-dev/devops-repo/bhavani-nginx:${{ github.sha }}
+
+      - name: Verify Rollout
+        run: |
+          kubectl rollout status deployment/bhavani-web
