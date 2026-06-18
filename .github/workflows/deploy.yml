@@ -16,6 +16,7 @@ env:
   IMAGE: bhavani-nginx
   CLUSTER_NAME: devops-gke
   CLUSTER_ZONE: europe-west1-b
+  USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
 
 jobs:
   deploy:
@@ -34,6 +35,8 @@ jobs:
 
       - name: Setup GCloud
         uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: 'gke-gcloud-auth-plugin'
 
       - name: Configure Docker
         run: |
