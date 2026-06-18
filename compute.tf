@@ -1,5 +1,5 @@
 resource "google_compute_instance" "vm" {
-  name         = "devops-vm"
+  name         = "${local.resource_prefix}-vm"
   machine_type = "e2-micro"
   zone         = "${var.region}-b"
 
@@ -19,5 +19,18 @@ resource "google_compute_instance" "vm" {
 
   metadata_startup_script = file("${path.module}/scripts/startup.sh")
 
-  tags = ["ssh"]
+  tags = ["ssh", "http"]
+
+  labels = merge(
+    var.common_labels,
+    {
+      name        = "compute-vm"
+      environment = var.environment
+    }
+  )
+
+  service_account {
+    email  = google_service_account.compute_instance.email
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
 }

@@ -1,5 +1,5 @@
 resource "google_compute_instance_template" "nginx" {
-  name_prefix  = "nginx-template"
+  name_prefix  = "${local.resource_prefix}-nginx-template"
   machine_type = "e2-micro"
 
   disk {
@@ -16,12 +16,17 @@ resource "google_compute_instance_template" "nginx" {
 
   metadata_startup_script = file("${path.module}/scripts/startup.sh")
 
-  tags = ["ssh"]
+  tags = ["ssh", "http"]
+
+  service_account {
+    email  = google_service_account.compute_instance.email
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
 }
 
 resource "google_compute_instance_group_manager" "nginx" {
-  name               = "nginx-mig"
-  base_instance_name = "nginx"
+  name               = "${local.resource_prefix}-nginx-mig"
+  base_instance_name = "${local.resource_prefix}-nginx"
   zone               = "${var.region}-b"
 
   version {
@@ -33,5 +38,10 @@ resource "google_compute_instance_group_manager" "nginx" {
   named_port {
     name = "http"
     port = 80
+  }
+
+  named_port {
+    name = "https"
+    port = 443
   }
 }

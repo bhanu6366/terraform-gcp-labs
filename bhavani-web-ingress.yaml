@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bhavani-web-ingress
+
+spec:
+  ingressClassName: nginx
+
+  rules:
+  - host: bhavani-web.34-78-190-242.nip.io
+
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+
+        backend:
+          service:
+            name: bhavani-web
+            port:
+              number: 80
