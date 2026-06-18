@@ -36,4 +36,4 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -input=false -var-file=environments/dev.tfvars
+        run: terraform plan -input=false -var-file=environments/dev.tfvars -var="db_password=ci-plan-placeholder-password"
